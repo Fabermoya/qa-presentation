@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Session – CSI | Nu Colombia</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
+:root {
+  --nu-purple: #820AD1;
+  --nu-purple-dark: #5B0899;
+  --nu-purple-deeper: #2D0A4E;
+  --nu-purple-light: #E8D5F5;
+  --nu-purple-bg: #F5EEFB;
+  --nu-white: #FFFFFF;
+  --nu-black: #111111;
+  --nu-gray-700: #444444;
+  --nu-gray-500: #767676;
+  --nu-gray-300: #C4C4C4;
+  --nu-gray-100: #F5F5F5;
+  --nu-green: #00A650;
+  --nu-green-light: #E8F5E9;
+  --nu-green-border: #66BB6A;
+  --nu-red: #E53935;
+  --nu-red-light: #FFEBEE;
+  --nu-red-border: #EF9A9A;
+  --nu-yellow: #FFA000;
+  --nu-yellow-light: #FFF8E1;
+  --nu-cyan: #4FC3F7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--nu-gray-100);
+  color: var(--nu-black);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.presentation {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.slides-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  transition: opacity 0.3s ease;
+}
+
+.slide.active {
+  display: flex;
+}
+
+/* COVER & CLOSE */
+.slide-cover, .slide-close {
+  background: linear-gradient(135deg, var(--nu-purple-deeper) 0%, var(--nu-purple-dark) 40%, var(--nu-purple) 100%);
+  flex-direction: column;
+  text-align: center;
+  color: var(--nu-white);
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-cover .decorative-circle,
+.slide-close .decorative-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+
+.slide-cover .decorative-circle:nth-child(1) { width: 400px; height: 400px; top: -100px; right: -100px; }
+.slide-cover .decorative-circle:nth-child(2) { width: 300px; height: 300px; bottom: -80px; left: -80px; }
+.slide-cover .decorative-circle:nth-child(3) { width: 200px; height: 200px; top: 50%; left: 10%; }
+.slide-close .decorative-circle:nth-child(1) { width: 400px; height: 400px; top: -100px; left: -100px; }
+.slide-close .decorative-circle:nth-child(2) { width: 300px; height: 300px; bottom: -80px; right: -80px; }
+.slide-close .decorative-circle:nth-child(3) { width: 200px; height: 200px; bottom: 30%; right: 15%; }
+
+.cover-content, .close-content {
+  position: relative;
+  z-index: 1;
+}
+
+.cover-content h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+}
+
+.cover-content .subtitle {
+  font-size: 1.3rem;
+  font-weight: 300;
+  opacity: 0.85;
+  margin-bottom: 32px;
+}
+
+.target-badge {
+  display: inline-block;
+  background: var(--nu-cyan);
+  color: var(--nu-black);
+  padding: 10px 28px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.close-content h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.close-content .subtitle {
+  font-size: 1.4rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* SECTION DIVIDER */
+.slide-section {
+  background: var(--nu-purple);
+  color: var(--nu-white);
+  flex-direction: column;
+  text-align: center;
+}
+
+.slide-section h2 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  max-width: 700px;
+  line-height: 1.3;
+}
+
+/* FLASHCARD SLIDES */
+.slide-flashcard {
+  background: var(--nu-gray-100);
+  padding: 30px;
+  gap: 30px;
+}
+
+.flashcard-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.roulette-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* FLASHCARD */
+.flashcard-container {
+  width: 100%;
+  max-width: 600px;
+  height: calc(100vh - 120px);
+  perspective: 1200px;
+  cursor: pointer;
+}
+
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.flashcard.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* FRONT */
+.flashcard-front {
+  background: var(--nu-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.flashcard-front .icon-circle {
+  width: 80px;
+  height: 80px;
+  background: var(--nu-purple-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin-bottom: 28px;
+}
+
+.flashcard-front .question-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--nu-purple-deeper);
+  line-height: 1.5;
+  max-width: 420px;
+}
+
+.flashcard-front .flip-hint {
+  margin-top: 32px;
+  font-size: 0.85rem;
+  color: var(--nu-gray-500);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* BACK */
+.flashcard-back {
+  background: var(--nu-white);
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+}
+
+.back-header {
+  background: var(--nu-purple);
+  color: var(--nu-white);
+  padding: 10px 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.back-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+.answer-block h4 {
+  font-size: 0.82rem;
+}
+
+.answer-block p, .answer-block li {
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.back-body::-webkit-scrollbar { width: 6px; }
+.back-body::-webkit-scrollbar-thumb { background: var(--nu-gray-300); border-radius: 3px; }
+
+.back-intro {
+  font-size: 0.82rem;
+  color: var(--nu-gray-700);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.answer-block {
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.answer-block .block-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.answer-block.do {
+  background: var(--nu-green-light);
+  border-left: 4px solid var(--nu-green-border);
+}
+
+.answer-block.dont {
+  background: var(--nu-red-light);
+  border-left: 4px solid var(--nu-red-border);
+}
+
+.answer-block.warn {
+  background: var(--nu-yellow-light);
+  border-left: 4px solid var(--nu-yellow);
+}
+
+.answer-block.info {
+  background: var(--nu-purple-bg);
+  border-left: 4px solid var(--nu-purple);
+}
+
+.answer-block strong { font-weight: 700; }
+
+.back-footer {
+  background: var(--nu-purple-bg);
+  color: var(--nu-purple-dark);
+  padding: 8px 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+/* BIG NUMBERS (tema 14) */
+.big-numbers {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.big-number-box {
+  flex: 1;
+  text-align: center;
+  padding: 16px;
+  background: var(--nu-purple-bg);
+  border-radius: 12px;
+}
+
+.big-number-box .number {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--nu-purple);
+  line-height: 1;
+}
+
+.big-number-box .label {
+  font-size: 0.75rem;
+  color: var(--nu-gray-500);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.big-number-box .desc {
+  font-size: 0.8rem;
+  color: var(--nu-gray-700);
+  margin-top: 2px;
+}
+
+/* CENTERED BLOCK (tema 12) */
+.centered-block {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--nu-purple);
+  padding: 24px;
+}
+
+/* ROULETTE */
+.roulette-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roulette-pointer {
+  font-size: 32px;
+  color: var(--nu-purple);
+  z-index: 2;
+  transition: transform 0.1s;
+  line-height: 1;
+  margin-bottom: -4px;
+}
+
+.roulette-pointer.bounce {
+  animation: pointerBounce 0.15s ease;
+}
+
+@keyframes pointerBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+.roulette-canvas-wrap {
+  position: relative;
+  width: 520px;
+  height: 520px;
+}
+
+.roulette-canvas-wrap canvas {
+  width: 520px;
+  height: 520px;
+}
+
+.session-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.session-btn {
+  padding: 8px 20px;
+  border: 2px solid var(--nu-purple);
+  background: var(--nu-white);
+  color: var(--nu-purple);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.session-btn.active {
+  background: var(--nu-purple);
+  color: var(--nu-white);
+}
+
+.spin-btn {
+  margin-top: 16px;
+  padding: 12px 32px;
+  background: var(--nu-purple);
+  color: var(--nu-white);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.spin-btn:hover { background: var(--nu-purple-dark); }
+.spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.winner-display {
+  margin-top: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--nu-purple);
+  min-height: 36px;
+  text-align: center;
+}
+
+.winner-display.show {
+  animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* NAV BAR */
+.nav-bar {
+  height: 56px;
+  background: var(--nu-white);
+  border-top: 1px solid var(--nu-gray-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.nav-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--nu-gray-100);
+  color: var(--nu-gray-700);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover { background: var(--nu-purple-light); color: var(--nu-purple); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.slide-counter {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--nu-gray-500);
+  min-width: 60px;
+  text-align: center;
+}
+
+.progress-bar-wrap {
+  width: 200px;
+  height: 6px;
+  background: var(--nu-gray-300);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--nu-purple);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* CONFIG BUTTON */
+.config-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  color: var(--nu-gray-700);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+
+.config-btn:hover { background: var(--nu-white); color: var(--nu-purple); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--nu-white);
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.2);
+}
+
+.modal h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--nu-purple-deeper);
+  margin-bottom: 20px;
+}
+
+.modal label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--nu-gray-700);
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+
+.modal textarea {
+  width: 100%;
+  height: 160px;
+  border: 2px solid var(--nu-gray-300);
+  border-radius: 10px;
+  padding: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.modal textarea:focus {
+  outline: none;
+  border-color: var(--nu-purple);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-actions button {
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-cancel {
+  background: var(--nu-gray-100);
+  color: var(--nu-gray-700);
+}
+
+.btn-save {
+  background: var(--nu-purple);
+  color: var(--nu-white);
+}
+
+.btn-save:hover { background: var(--nu-purple-dark); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .slide-flashcard {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+  }
+  .flashcard-container {
+    max-width: 100%;
+    height: 50vh;
+  }
+  .roulette-canvas-wrap {
+    width: 300px;
+    height: 300px;
+  }
+  .roulette-canvas-wrap canvas {
+    width: 300px;
+    height: 300px;
+  }
+  .cover-content h1 { font-size: 2rem; }
+  .slide-section h2 { font-size: 1.6rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="presentation">
+  <div class="slides-container" id="slidesContainer">
+
+    <!-- SLIDE 0: COVER -->
+    <div class="slide slide-cover active" data-slide="0">
+      <div class="decorative-circle"></div>
+      <div class="decorative-circle"></div>
+      <div class="decorative-circle"></div>
+      <div class="cover-content">
+        <h1>Biweekly QA Session – CSI</h1>
+        <p class="subtitle">Lineamientos y Actualizaciones de la Semana</p>
+        <div class="target-badge">Target: 93%</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 1: SECTION -->
+    <div class="slide slide-section" data-slide="1">
+      <h2>Bloque 1: Primer Contacto y Documentación</h2>
+    </div>
+
+    <!-- SLIDE 2: TEMA 1 -->
+    <div class="slide slide-flashcard" data-slide="2">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">📋</div>
+              <div class="question-text">¿Qué debo hacer si el cliente me comparte información suficiente sobre su incidente y abandona la interacción?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Solicitud de Evidencias en Primer Contacto</div>
+              <div class="back-body">
+                <p class="back-intro">Si el cliente comparte información suficiente sobre su incidente pero abandona la interacción, debemos actuar sobre lo que ya tenemos.</p>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  Si el cliente proporcionó contexto suficiente, <strong>debemos generar el complaint</strong> y solicitar las evidencias correspondientes. No debemos esperar a que el cliente regrese para documentar el caso.
+                </div>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  No generar el complaint cuando el cliente ya nos dio información suficiente para hacerlo. Si el cliente abandona la interacción pero compartió información suficiente, se debe generar el reporte igualmente.
+                </div>
+              </div>
+              <div class="back-footer">📌 Info suficiente + cliente abandona = generar complaint + solicitar evidencias.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 3: TEMA 2 -->
+    <div class="slide slide-flashcard" data-slide="3">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">🔍</div>
+              <div class="question-text">El cliente dice: 'No reconozco las transacciones de hoy de mi tarjeta de crédito/cuenta.' ¿Qué información le pido?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">No Pedir Info que Ya Vemos en el PV</div>
+              <div class="back-body">
+                <p class="back-intro">Si el cliente nos dice que no reconoce transacciones realizadas hoy y ya nos indicó que fue con su tarjeta/cuenta, <strong>no debemos pedirle valores, fechas o detalles</strong> que ya podemos consultar en el Person View (PV). La pregunta se debe enfocar en solicitar contexto o confirmar las transacciones que vemos en el PV.</p>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  '¿Me podrías indicar el valor de las transacciones que no reconoces?' — '¿De cuánto fue la compra?' — Pedirle al cliente que nos dicte información que ya está disponible en el PV.
+                </div>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  Solicitar contexto sobre lo sucedido y confirmar directamente las transacciones desde el PV: <strong>'Veo que hoy tienes una compra en [comercio] por [valor]. ¿Reconoces esta transacción?'</strong>
+                </div>
+              </div>
+              <div class="back-footer">🔍 Si lo vemos en el PV, no lo preguntemos. Confirmemos directamente.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 4: TEMA 3 -->
+    <div class="slide slide-flashcard" data-slide="4">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">🔄</div>
+              <div class="question-text">Ya solicité las evidencias al cliente. ¿Qué debo hacer con el estado del complaint?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Actualización del Complaint a Action Request</div>
+              <div class="back-body">
+                <div class="answer-block do">
+                  <div class="block-title">📤 Al solicitar evidencias → Action Request</div>
+                  1. Solicitar evidencias (por chat, email o llamada).<br>2. Cambiar el estado del complaint a 'Action Request'.<br>3. Agregar un comentario claro: 'Evidencias solicitadas por chat' o el medio que corresponda.
+                </div>
+                <div class="answer-block info">
+                  <div class="block-title">📥 Al recibir evidencias → In Analysis</div>
+                  Cuando el cliente envía las evidencias, cambiar el estado del complaint a 'In Analysis'. Adjuntar las evidencias al complaint.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">💬 Notificación por chat/llamada → Contestar el correo</div>
+                  Si el cliente notifica por chat o llamada que ya envió las evidencias por email, se debe contestar el correo electrónico correspondiente con la macro de recepción de evidencias para reducir el backlog.
+                </div>
+              </div>
+              <div class="back-footer">📋 Solicitar → Action Request + comentario → Recibir → In Analysis.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 5: SECTION -->
+    <div class="slide slide-section" data-slide="5">
+      <h2>Bloque 2: Bloqueos y Dispositivos</h2>
+    </div>
+
+    <!-- SLIDE 6: TEMA 4 -->
+    <div class="slide slide-flashcard" data-slide="6">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">📱</div>
+              <div class="question-text">El cliente me reporta por chat que le robaron el celular. ¿Debo desautorizar todos sus dispositivos?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Desautorización de Dispositivo – Cuidado en Chat</div>
+              <div class="back-body">
+                <p class="back-intro">Si desautorizamos el dispositivo desde el que el cliente se está contactando, <strong>no podrá iniciar sesión</strong> hasta que reinstale la app.</p>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  Desautorizar todos los dispositivos sin verificar desde cuál está chateando el cliente.
+                </div>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  Identificar el dispositivo desde el cual el cliente está chateando. Solo desautorizar el <strong>dispositivo robado</strong>, NO el nuevo desde el que interactúa.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">⚠️ Scope necesario</div>
+                  Si no tienes el scope para desautorizar, solicítalo: <strong>force-client-certificate-validator</strong>
+                </div>
+              </div>
+              <div class="back-footer">📱 NO desautorizar el dispositivo desde el que chatea. Scope: force-client-certificate-validator.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 7: TEMA 5 -->
+    <div class="slide slide-flashcard" data-slide="7">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">💳</div>
+              <div class="question-text">El cliente solo quiere reimprimir su tarjeta. ¿Es suficiente con hacer la reimpresión?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Reimpresión de Tarjetas – Visión Integral</div>
+              <div class="back-body">
+                <p class="back-intro">Aunque la solicitud principal sea la reimpresión, nuestro análisis <strong>no debe detenerse ahí</strong>.</p>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  Reimprimir la tarjeta <strong>+</strong> validar en el sistema si hay transacciones no reconocidas <strong>+</strong> extraer el contexto completo del incidente en el primer contacto.
+                </div>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  Solo reimprimir la tarjeta sin validar transacciones no reconocidas ni extraer contexto del incidente.
+                </div>
+              </div>
+              <div class="back-footer">💳 Reimpresión + validación de transacciones no reconocidas + contexto completo.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 8: SECTION -->
+    <div class="slide slide-section" data-slide="8">
+      <h2>Bloque 3: Tipificación y Canales</h2>
+    </div>
+
+    <!-- SLIDE 9: TEMA 6 -->
+    <div class="slide slide-flashcard" data-slide="9">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">🏷️</div>
+              <div class="question-text">El cliente ya nos contactó antes por el mismo caso. ¿Qué Contact Reason debo usar?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Contact Reason de Recontacto</div>
+              <div class="back-body">
+                <p class="back-intro">A partir del <strong>segundo contacto relacionado con un caso de CSI</strong>, siempre usar la CR de recontacto. No duplicar CRs de coerción, Scam, Robo, etc.</p>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  Usar nuevamente la CR de coerción, estafa o robo en un segundo contacto del mismo caso de CSI. Esto afecta la data y las métricas de calidad.
+                </div>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  A partir del 2do contacto, seleccionar siempre la <strong>CR de Recontacto</strong>. Si el PV ya tiene un complaint asociado, la interacción es un recontacto.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">⚠️ Excepción: Mule Account</div>
+                  Esta CR de recontacto <strong>NO aplica para casos de Mule Account</strong>. Los casos de Mule Account se tipifican con sus propias CRs correspondientes.
+                </div>
+              </div>
+              <div class="back-footer">🏷️ 2do contacto CSI = CR de Recontacto. No duplicar CRs. No aplica para Mule Account.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 10: TEMA 7 -->
+    <div class="slide slide-flashcard" data-slide="10">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">🔎</div>
+              <div class="question-text">Antes de crear un escalamiento o enviar un ticket, ¿qué debo verificar primero?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Verificar Tickets Existentes – Jira y Zendesk</div>
+              <div class="back-body">
+                <p class="back-intro">La misma validación aplica para <strong>dos herramientas</strong>: verificar si ya existe un caso abierto antes de crear uno nuevo.</p>
+                <div class="answer-block info">
+                  <div class="block-title">📋 En Jira (Escalamientos)</div>
+                  Buscar con el <strong>Customer ID</strong> si ya existe un escalamiento previo. Si existe: notificar recontacto en el caso abierto. Si no: abrir nuevo escalamiento.
+                </div>
+                <div class="answer-block info">
+                  <div class="block-title">📧 En Zendesk (Tickets de email)</div>
+                  Antes de enviar un nuevo correo, verificar si hay un <strong>ticket previo</strong>. Si existe: responder sobre ese ticket. Para notificar resolución, usar siempre el ticket anterior.
+                </div>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  Abrir escalamientos duplicados en Jira o crear múltiples tickets en Zendesk para el mismo cliente sobre el mismo caso.
+                </div>
+              </div>
+              <div class="back-footer">🔎 Jira y Zendesk: siempre buscar caso existente antes de crear uno nuevo.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 11: TEMA 8 -->
+    <div class="slide slide-flashcard" data-slide="11">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">📊</div>
+              <div class="question-text">¿Cuándo debo enviar la encuesta tNPS y cuándo NO, si el cliente abandonó la interacción?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Encuesta tNPS – Cuándo SÍ y Cuándo NO</div>
+              <div class="back-body">
+                <div class="answer-block do">
+                  <div class="block-title">✅ Duda Resuelta → SÍ enviar</div>
+                  Si la razón principal del contacto fue resuelta satisfactoriamente, enviar la promoción de la encuesta al finalizar.
+                </div>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ Duda NO Resuelta → NO enviar</div>
+                  Si NO se logra resolver el requerimiento, está <strong>estrictamente prohibido</strong> enviar la encuesta.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">💡 Inactividad</div>
+                  Abandona sin respuesta → macro de inactividad (sin encuesta).
+                </div>
+              </div>
+              <div class="back-footer">📊 Duda resuelta = encuesta. Sin resolver o abandono sin respuesta = NO.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 12: TEMA 9 -->
+    <div class="slide slide-flashcard" data-slide="12">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">💜</div>
+              <div class="question-text">¿Qué debe tener el cierre de toda interacción?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Cierre de Interacción + Branding</div>
+              <div class="back-body">
+                <div class="answer-block info">
+                  <div class="block-title">✨ Cierre obligatorio</div>
+                  <div class="centered-block">Un abrazo, Equipo Nu.</div>
+                </div>
+                <div class="answer-block do">
+                  <div class="block-title">📝 Por canal</div>
+                  <strong>Chat:</strong> Macro con deep link + cierre con <strong>branding</strong>.<br>
+                  <strong>Email:</strong> Si enviamos una macro en estado 'Resuelto', es porque estamos dando respuesta al cliente y debemos adjuntar la <strong>encuesta</strong>.<br>
+                  <strong>Phone:</strong> Es válido omitir 'Un abrazo' para hacer el guion más corto. Pero sí se debe cerrar con el <strong>branding: Equipo Nu</strong>.
+                </div>
+              </div>
+              <div class="back-footer">💜 Chat: deep link + branding. Email: macro Resuelto + encuesta. Phone: branding 'Equipo Nu' obligatorio.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 13: TEMA 10 -->
+    <div class="slide slide-flashcard" data-slide="13">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">💬</div>
+              <div class="question-text">El chat expiró. ¿Debo retomar la interacción o simplemente cerrarla?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Cierre de Chats Expirados</div>
+              <div class="back-body">
+                <div class="answer-block do">
+                  <div class="block-title">⏱️ Menos de 1 hora</div>
+                  Si el último mensaje fue del agente y expiró hace <strong>menos de 1 hora</strong>: <strong>retomar</strong>, saludar y continuar el caso.
+                </div>
+                <div class="answer-block dont">
+                  <div class="block-title">🚫 Más de 1 hora</div>
+                  Si expiró hace <strong>más de 1 hora</strong>: <strong>no responder</strong>. Marcar con la CR correspondiente y cerrar.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">⚠️ Inactividad</div>
+                  Esperar <strong>60 minutos</strong> desde el último mensaje del agente. Si estás terminando turno y ya diste respuesta, es válido enviar encuesta y cerrar.
+                </div>
+              </div>
+              <div class="back-footer">💬 &lt;1h = retomar | &gt;1h = cerrar con CR | Fin de turno = encuesta y cerrar.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 14: SECTION -->
+    <div class="slide slide-section" data-slide="14">
+      <h2>Bloque 4: Mule Account y Fraudsters</h2>
+    </div>
+
+    <!-- SLIDE 15: TEMA 11 -->
+    <div class="slide slide-flashcard" data-slide="15">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">🟡</div>
+              <div class="question-text">Veo una alerta amarilla de Mule Account. ¿Debo escalar el caso?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Alertas Amarillas – Gestión Interna CSI</div>
+              <div class="back-body">
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  Generar un escalamiento en Jira por una alerta amarilla siendo agente CSI. Escalamientos solo para agentes <strong>externos</strong>.
+                </div>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  Analizar directamente: archivar si es favorable o fraudsterizar si se confirma fraude. <strong>No mencionarle al cliente</strong> que debe esperar 24 horas mientras se realiza la validación de seguridad.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">🚨 Si se fraudsteriza la cuenta</div>
+                  En caso de que se deba fraudsterizar la cuenta, <strong>se debe realizar en la misma interacción</strong>. De esta manera, si el cliente solicita la devolución de dinero, se realizará el escalamiento en un solo contacto.
+                </div>
+              </div>
+              <div class="back-footer">⚠️ Alertas amarillas = gestión interna CSI. Escalamientos solo para externos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 16: TEMA 12 -->
+    <div class="slide slide-flashcard" data-slide="16">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">🏦</div>
+              <div class="question-text">Un cliente de Nu hizo una transferencia desde otro banco y fue desviada a una cuenta Nu. ¿Es estafa o Mule Account?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Cliente Nu como Víctima de Mule Account</div>
+              <div class="back-body">
+                <div class="answer-block warn">
+                  <div class="block-title">🔑 ¿Cuándo aplica?</div>
+                  Solo si el cliente hizo la transferencia <strong>desde su cuenta en otro banco</strong> y los fondos llegaron a una cuenta Nu.
+                </div>
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  Categorizar como <strong>estafa (Scam)</strong> cuando la transacción se originó desde otro banco hacia una cuenta Nu.
+                </div>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  Categorizar como <strong>Víctima de Mule Account</strong>. El cliente de Nu es víctima, no estafado desde Nu.
+                </div>
+              </div>
+              <div class="back-footer">🏦 Transferencia desde otro banco hacia cuenta Nu = Víctima de MA, NO estafa.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 17: TEMA 13 -->
+    <div class="slide slide-flashcard" data-slide="17">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">📞</div>
+              <div class="question-text">Una persona que NO es cliente de Nu nos contacta diciendo que su dinero llegó a una cuenta Nu. ¿Qué hago?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Víctimas MA Externas – Direccionamiento</div>
+              <div class="back-body">
+                <div class="answer-block do">
+                  <div class="block-title">✅ Pasos</div>
+                  <strong>1.</strong> Indicar que debe presentar <strong>queja formal en la entidad originadora</strong>.<br>
+                  <strong>2.</strong> Con la ayuda de los Coppola, la cédula o el correo del posible fraudster, <strong>ubicar la cuenta receptora</strong> y generar el <strong>suspect block</strong>.<br>
+                  <strong>3.</strong> Escalar en <strong>#col-csi-reports</strong>.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">⚠️ Importante</div>
+                  Solo se debe <strong>generar la alerta</strong>. En esa interacción <strong>NO se debe realizar el análisis de Mule Account</strong> a la cuenta receptora. No compartir datos de la cuenta receptora (reserva bancaria). Incluir aviso de tratamiento de datos personales.
+                </div>
+              </div>
+              <div class="back-footer">🔗 Víctima externa → queja en su banco + reporte en #col-csi-reports.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 18: TEMA 14 -->
+    <div class="slide slide-flashcard" data-slide="18">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">⏳</div>
+              <div class="question-text">Un fraudster nos contacta pidiendo la devolución de su dinero. ¿Qué tiempos le comunico?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Devolución a Fraudsters – Tiempos Oficiales</div>
+              <div class="back-body">
+                <div class="big-numbers">
+                  <div class="big-number-box">
+                    <div class="number">3-5</div>
+                    <div class="label">Días Hábiles</div>
+                    <div class="desc">Primera respuesta oficial</div>
+                  </div>
+                  <div class="big-number-box">
+                    <div class="number">15</div>
+                    <div class="label">Días Hábiles</div>
+                    <div class="desc">Devolución efectiva</div>
+                  </div>
+                </div>
+                <div class="answer-block info">
+                  <div class="block-title">📋 Tiempo total técnico</div>
+                  Técnicamente serán hasta <strong>20 días hábiles</strong> desde que se crea el escalamiento de solicitud de devolución.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">⚠️ Nunca garantizar la devolución</div>
+                  Solo informar que la solicitud será escalada y los tiempos de respuesta. CSI evaluará viabilidad y monto.
+                </div>
+              </div>
+              <div class="back-footer">⏳ 3-5 días primera respuesta | 15 días devolución. Nunca prometer.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 19: SECTION -->
+    <div class="slide slide-section" data-slide="19">
+      <h2>Bloque 5: Escalamientos y Comunicación</h2>
+    </div>
+
+    <!-- SLIDE 20: TEMA 15 -->
+    <div class="slide slide-flashcard" data-slide="20">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">⏱️</div>
+              <div class="question-text">El escalamiento se generó hace 3 días y el cliente se recontacta hoy. ¿Le digo que en 5 días hábiles tendrá respuesta?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Tiempos de Escalamiento – Calcular el Restante</div>
+              <div class="back-body">
+                <div class="answer-block dont">
+                  <div class="block-title">❌ No Hacer</div>
+                  Decir: 'En 5 días hábiles tendrá respuesta' cuando el escalamiento ya tiene 3 días. El plazo ya comenzó.
+                </div>
+                <div class="answer-block do">
+                  <div class="block-title">✅ Hacer</div>
+                  Verificar la fecha del escalamiento: 'Su caso ya fue escalado hace 3 días. La respuesta llegará en los próximos <strong>2 días hábiles</strong>.'
+                </div>
+              </div>
+              <div class="back-footer">⏱️ Calcular tiempo RESTANTE desde la fecha del escalamiento, no desde hoy.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 21: TEMA 16 -->
+    <div class="slide slide-flashcard" data-slide="21">
+      <div class="flashcard-side">
+        <div class="flashcard-container" onclick="flipCard(this)">
+          <div class="flashcard">
+            <div class="flashcard-front">
+              <div class="icon-circle">💰</div>
+              <div class="question-text">Un caso de CSI fue favorable para el cliente y ahora reporta cobro de intereses. ¿CSI es el responsable de hacer el ajuste de los intereses?</div>
+              <div class="flip-hint"><span class="material-icons-outlined" style="font-size:18px">touch_app</span> Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-back">
+              <div class="back-header">Reclamaciones e Intereses</div>
+              <div class="back-body">
+                <div class="answer-block do">
+                  <div class="block-title">✅ Procedimiento</div>
+                  <strong>1.</strong> Tomar como <strong>recontacto</strong>.<br>
+                  <strong>2.</strong> Informar que, una vez se termine de pagar (<strong>todas las cuotas + intereses</strong>), podrá volver a contactarse.<br>
+                  <strong>3.</strong> En ese momento, proceder al ajuste.<br>
+                  <strong>4.</strong> Escalar vía Jira cuando complete el pago.
+                </div>
+                <div class="answer-block warn">
+                  <div class="block-title">⚠️ Clave</div>
+                  La compra debe estar <strong>pagada en su totalidad</strong> antes de proceder con el ajuste.
+                </div>
+              </div>
+              <div class="back-footer">💳 Intereses se ajustan post pago total. Recontacto → escalar cuando complete.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="roulette-side" data-roulette="true"></div>
+    </div>
+
+    <!-- SLIDE 22: CLOSE -->
+    <div class="slide slide-close" data-slide="22">
+      <div class="decorative-circle"></div>
+      <div class="decorative-circle"></div>
+      <div class="decorative-circle"></div>
+      <div class="close-content">
+        <h1>¡Gracias!</h1>
+        <p class="subtitle">Un abrazo, Equipo Nu. 💜</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NAV BAR -->
+  <div class="nav-bar">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">
+      <span class="material-icons-outlined">chevron_left</span>
+    </button>
+    <span class="slide-counter" id="slideCounter">1 / 23</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">
+      <span class="material-icons-outlined">chevron_right</span>
+    </button>
+  </div>
+</div>
+
+<!-- CONFIG BUTTON -->
+<button class="config-btn" onclick="openModal()">
+  <span class="material-icons-outlined">settings</span>
+</button>
+
+<!-- CONFIG MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h2>Configuración de Participantes</h2>
+    <label for="session1Names">Sesión 1 (un nombre por línea)</label>
+    <textarea id="session1Names"></textarea>
+    <label for="session2Names">Sesión 2 (un nombre por línea)</label>
+    <textarea id="session2Names"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveConfig()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var TOTAL_SLIDES = 23;
+var currentSlide = 0;
+var slides = [];
+var rouletteInstances = {};
+var currentSession = 0;
+
+var WHEEL_COLORS = [
+  '#820AD1','#A855F7','#6D28D9','#7C3AED','#5B21B6',
+  '#4FC3F7','#00A650','#FFA000','#E53935','#EC407A',
+  '#AB47BC','#7E57C2','#5C6BC0','#42A5F5','#26A69A',
+  '#66BB6A','#FFA726','#EF5350'
+];
+
+var defaultSessions = [
+  Array.from({length: 14}, function(_, i) { return 'Participante ' + (i + 1); }),
+  Array.from({length: 17}, function(_, i) { return 'Participante ' + (i + 1); })
+];
+
+function getSessions() {
+  try {
+    var saved = localStorage.getItem('qa_roulette_sessions');
+    if (saved) {
+      var parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length === 2) return parsed;
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(defaultSessions));
+}
+
+function saveSessions(sessions) {
+  localStorage.setItem('qa_roulette_sessions', JSON.stringify(sessions));
+}
+
+function init() {
+  slides = document.querySelectorAll('.slide');
+  updateNav();
+  initAllRoulettes();
+}
+
+function navigate(dir) {
+  var next = currentSlide + dir;
+  if (next < 0 || next >= TOTAL_SLIDES) return;
+  resetFlashcard(currentSlide);
+  slides[currentSlide].classList.remove('active');
+  currentSlide = next;
+  slides[currentSlide].classList.add('active');
+  updateNav();
+  if (slides[currentSlide].classList.contains('slide-flashcard')) {
+    var slideIdx = parseInt(slides[currentSlide].getAttribute('data-slide'));
+    if (rouletteInstances[slideIdx]) {
+      rouletteInstances[slideIdx].draw();
+    }
+  }
+}
+
+function goToSlide(idx) {
+  if (idx < 0 || idx >= TOTAL_SLIDES) return;
+  resetFlashcard(currentSlide);
+  slides[currentSlide].classList.remove('active');
+  currentSlide = idx;
+  slides[currentSlide].classList.add('active');
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('slideCounter').textContent = (currentSlide + 1) + ' / ' + TOTAL_SLIDES;
+  document.getElementById('progressBar').style.width = ((currentSlide / (TOTAL_SLIDES - 1)) * 100) + '%';
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === TOTAL_SLIDES - 1;
+}
+
+function flipCard(container) {
+  var card = container.querySelector('.flashcard');
+  card.classList.toggle('flipped');
+}
+
+function resetFlashcard(idx) {
+  var slide = slides[idx];
+  if (!slide) return;
+  var card = slide.querySelector('.flashcard');
+  if (card) card.classList.remove('flipped');
+}
+
+/* KEYBOARD */
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('modalOverlay').classList.contains('active')) return;
+  switch(e.key) {
+    case 'ArrowRight':
+    case 'ArrowDown':
+      e.preventDefault();
+      navigate(1);
+      break;
+    case 'ArrowLeft':
+    case 'ArrowUp':
+      e.preventDefault();
+      navigate(-1);
+      break;
+    case ' ':
+      e.preventDefault();
+      var card = slides[currentSlide].querySelector('.flashcard-container');
+      if (card) flipCard(card);
+      break;
+    case 'Home':
+      e.preventDefault();
+      goToSlide(0);
+      break;
+    case 'End':
+      e.preventDefault();
+      goToSlide(TOTAL_SLIDES - 1);
+      break;
+  }
+});
+
+/* TOUCH SWIPE */
+var touchStartX = 0;
+var touchStartY = 0;
+
+document.addEventListener('touchstart', function(e) {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, {passive: true});
+
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].screenX - touchStartX;
+  var dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    if (dx < 0) navigate(1);
+    else navigate(-1);
+  }
+}, {passive: true});
+
+/* CONFIG MODAL */
+function openModal() {
+  var sessions = getSessions();
+  document.getElementById('session1Names').value = sessions[0].join('\n');
+  document.getElementById('session2Names').value = sessions[1].join('\n');
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function saveConfig() {
+  var s1 = document.getElementById('session1Names').value.split('\n').map(function(n) { return n.trim(); }).filter(function(n) { return n.length > 0; });
+  var s2 = document.getElementById('session2Names').value.split('\n').map(function(n) { return n.trim(); }).filter(function(n) { return n.length > 0; });
+  if (s1.length === 0) s1 = defaultSessions[0];
+  if (s2.length === 0) s2 = defaultSessions[1];
+  saveSessions([s1, s2]);
+  closeModal();
+  initAllRoulettes();
+}
+
+/* ROULETTE ENGINE */
+function Roulette(container, slideIdx) {
+  this.container = container;
+  this.slideIdx = slideIdx;
+  this.spinning = false;
+  this.angle = 0;
+  this.winner = null;
+  this.animFrame = null;
+  this.lastSegment = -1;
+
+  this.container.innerHTML = '';
+
+  var sessionSwitcher = document.createElement('div');
+  sessionSwitcher.className = 'session-switcher';
+
+  var btn1 = document.createElement('button');
+  btn1.className = 'session-btn' + (currentSession === 0 ? ' active' : '');
+  btn1.textContent = 'Sesión 1';
+  btn1.onclick = function() { this.setSession(0); }.bind(this);
+
+  var btn2 = document.createElement('button');
+  btn2.className = 'session-btn' + (currentSession === 1 ? ' active' : '');
+  btn2.textContent = 'Sesión 2';
+  btn2.onclick = function() { this.setSession(1); }.bind(this);
+
+  sessionSwitcher.appendChild(btn1);
+  sessionSwitcher.appendChild(btn2);
+  this.container.appendChild(sessionSwitcher);
+  this.sessionBtns = [btn1, btn2];
+
+  var wrapper = document.createElement('div');
+  wrapper.className = 'roulette-wrapper';
+
+  var pointer = document.createElement('div');
+  pointer.className = 'roulette-pointer';
+  pointer.textContent = '\u25BC';
+  this.pointer = pointer;
+  wrapper.appendChild(pointer);
+
+  var canvasWrap = document.createElement('div');
+  canvasWrap.className = 'roulette-canvas-wrap';
+
+  var canvas = document.createElement('canvas');
+  canvas.width = 1040;
+  canvas.height = 1040;
+  this.canvas = canvas;
+  canvasWrap.appendChild(canvas);
+  wrapper.appendChild(canvasWrap);
+  this.container.appendChild(wrapper);
+
+  var spinBtn = document.createElement('button');
+  spinBtn.className = 'spin-btn';
+  spinBtn.innerHTML = '<span class="material-icons-outlined">casino</span> Girar';
+  spinBtn.onclick = function() { this.spin(); }.bind(this);
+  this.spinBtn = spinBtn;
+  this.container.appendChild(spinBtn);
+
+  var winnerDisplay = document.createElement('div');
+  winnerDisplay.className = 'winner-display';
+  this.winnerDisplay = winnerDisplay;
+  this.container.appendChild(winnerDisplay);
+
+  this.draw();
+}
+
+Roulette.prototype.getNames = function() {
+  return getSessions()[currentSession] || [];
+};
+
+Roulette.prototype.setSession = function(idx) {
+  currentSession = idx;
+  Object.keys(rouletteInstances).forEach(function(key) {
+    var r = rouletteInstances[key];
+    r.sessionBtns.forEach(function(b, i) {
+      b.classList.toggle('active', i === idx);
+    });
+    r.angle = 0;
+    r.winner = null;
+    r.winnerDisplay.textContent = '';
+    r.winnerDisplay.classList.remove('show');
+    r.draw();
+  });
+};
+
+Roulette.prototype.draw = function() {
+  var names = this.getNames();
+  var ctx = this.canvas.getContext('2d');
+  var cx = 520, cy = 520, r = 500;
+  var n = names.length;
+
+  ctx.clearRect(0, 0, 1040, 1040);
+
+  if (n === 0) {
+    ctx.fillStyle = '#ccc';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    return;
+  }
+
+  var sliceAngle = (Math.PI * 2) / n;
+  var fontSize;
+  if (n > 14) fontSize = 22;
+  else if (n > 10) fontSize = 24;
+  else fontSize = 28;
+
+  for (var i = 0; i < n; i++) {
+    var startAngle = this.angle + i * sliceAngle;
+    var endAngle = startAngle + sliceAngle;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(startAngle + sliceAngle / 2);
+    ctx.fillStyle = '#fff';
+    ctx.font = '600 ' + fontSize + 'px Inter';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    var displayName = names[i].length > 20 ? names[i].substring(0, 20) + '\u2026' : names[i];
+    ctx.fillText(displayName, r - 20, 0);
+    ctx.restore();
+  }
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 36, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = '#820AD1';
+  ctx.font = '700 14px Inter';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('GIRAR', cx, cy);
+};
+
+Roulette.prototype.spin = function() {
+  if (this.spinning) return;
+  var names = this.getNames();
+  if (names.length === 0) return;
+
+  this.spinning = true;
+  this.spinBtn.disabled = true;
+  this.winner = null;
+  this.winnerDisplay.textContent = '';
+  this.winnerDisplay.classList.remove('show');
+  this.lastSegment = -1;
+
+  var self = this;
+  var n = names.length;
+  var totalRotation = Math.PI * 2 * (8 + Math.random() * 6);
+  var duration = 4000 + Math.random() * 1500;
+  var startAngle = this.angle;
+  var startTime = performance.now();
+
+  function animate(now) {
+    var elapsed = now - startTime;
+    var t = Math.min(elapsed / duration, 1);
+    var eased = 1 - Math.pow(1 - t, 3);
+
+    self.angle = startAngle + totalRotation * eased;
+    self.draw();
+
+    var sliceAngle = (Math.PI * 2) / n;
+    var pointerAngle = (Math.PI * 2 - ((self.angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) + Math.PI * 1.5) % (Math.PI * 2);
+    var seg = Math.floor(pointerAngle / sliceAngle) % n;
+    if (seg < 0) seg += n;
+    if (seg !== self.lastSegment) {
+      self.lastSegment = seg;
+      self.pointer.classList.remove('bounce');
+      void self.pointer.offsetWidth;
+      self.pointer.classList.add('bounce');
+    }
+
+    if (t < 1) {
+      self.animFrame = requestAnimationFrame(animate);
+    } else {
+      self.spinning = false;
+      self.spinBtn.disabled = false;
+      self.winner = names[seg];
+      self.winnerDisplay.textContent = '\uD83C\uDF89 ' + self.winner;
+      self.winnerDisplay.classList.add('show');
+    }
+  }
+
+  this.animFrame = requestAnimationFrame(animate);
+};
+
+/* INIT ALL ROULETTES */
+function initAllRoulettes() {
+  rouletteInstances = {};
+  var rouletteSides = document.querySelectorAll('.roulette-side[data-roulette]');
+  rouletteSides.forEach(function(el) {
+    var slide = el.closest('.slide');
+    var idx = parseInt(slide.getAttribute('data-slide'));
+    rouletteInstances[idx] = new Roulette(el, idx);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
